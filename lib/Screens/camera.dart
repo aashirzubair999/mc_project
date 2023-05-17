@@ -16,7 +16,7 @@ class cameraAccess extends StatefulWidget {
 }
 
 class _cameraAccessState extends State<cameraAccess> {
-  File imagefile = File('');
+  File imagefile = File('assets/images/logo1.png');
 
 
   void _getFromCamera() async {
@@ -36,12 +36,13 @@ class _cameraAccessState extends State<cameraAccess> {
     final storageref = FirebaseStorage.instance.ref();
     final mountainsRef = storageref.child(path);
     final uploadTask = mountainsRef.putFile(imagefile);
+    final CurrentTime=DateTime.now();
 
     uploadTask.whenComplete(() async {
       final url = await mountainsRef.getDownloadURL();
       await FirebaseFirestore.instance
           .collection('images')
-          .add({'imageUrl': url,'UID':FirebaseAuth.instance.currentUser!.uid});
+          .add({'imageUrl': url,'UID':FirebaseAuth.instance.currentUser!.uid,'timestamp':CurrentTime});
       print(url);
     }).catchError((onError) {
       print(onError);
@@ -70,7 +71,9 @@ class _cameraAccessState extends State<cameraAccess> {
       final url = await mountainsRef.getDownloadURL();
       await FirebaseFirestore.instance
           .collection('images')
-          .add({'imageUrl': url,'UID':FirebaseAuth.instance.currentUser!.uid});
+          .add({'imageUrl': url,
+        'UID':FirebaseAuth.instance.currentUser!.uid,
+        'timestamp':DateTime.now()}, );
       print(url);
     }).catchError((onError) {
       print(onError);
@@ -101,38 +104,38 @@ class _cameraAccessState extends State<cameraAccess> {
         title:  Text(locationMessage.toString(),style: TextStyle(fontSize: 12),),
       ),
 
-      body: ListView(children:
-      [
+      body: ListView(
+          children: [
 
-        ElevatedButton(onPressed: (){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ImageDisplay(userId: FirebaseAuth.instance.currentUser!.uid)));
-        }, child: Text("Gallery")),
-        Text(locationMessage.toString()),
-        SizedBox(
-          height: 20,
-          width: 10,
-        ),
-        ElevatedButton(onPressed: (){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MapScreen()));
-        }, child: Text("Map")),
-        Text(locationMessage.toString()),
-        SizedBox(
-          height: 20,
-          width: 10,
-        ),
-        imagefile != null
-            ? Container(
+            ElevatedButton(onPressed: (){
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ImageDisplay(userId: FirebaseAuth.instance.currentUser!.uid)));
+            }, child: Text("Gallery")),
+            Text(locationMessage.toString()),
+            SizedBox(
+              height: 20,
+              width: 10,
+            ),
+            ElevatedButton(onPressed: (){
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MapScreen()));
+            }, child: Text("Map")),
+            Text(locationMessage.toString()),
+            SizedBox(
+              height: 20,
+              width: 10,
+            ),
+            imagefile != null
+                ? Container(
 
-          child: Image.file(imagefile),
-        )
-            : Container(
-          child: Icon(
-            Icons.camera_enhance_rounded,
-            color: Colors.green,
-            size: MediaQuery.of(context).size.width * .6,
-          ),
-        ),
-      ]),
+              child: Image.file(imagefile),
+            )
+                : Container(
+              child: Icon(
+                Icons.camera_enhance_rounded,
+                color: Colors.green,
+                size: MediaQuery.of(context).size.width * .6,
+              ),
+            ),
+          ]),
       floatingActionButton: SpeedDial(
         icon: Icons.add,
         children: [
