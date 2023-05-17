@@ -16,7 +16,7 @@ class cameraAccess extends StatefulWidget {
 }
 
 class _cameraAccessState extends State<cameraAccess> {
-  File imagefile = File('assets/images/logo1.png');
+  File imagefile = File('');
 
 
   void _getFromCamera() async {
@@ -68,6 +68,9 @@ class _cameraAccessState extends State<cameraAccess> {
 
     uploadTask.whenComplete(() async {
       final url = await mountainsRef.getDownloadURL();
+      await FirebaseFirestore.instance
+          .collection('images')
+          .add({'imageUrl': url,'UID':FirebaseAuth.instance.currentUser!.uid});
       print(url);
     }).catchError((onError) {
       print(onError);
@@ -98,7 +101,9 @@ class _cameraAccessState extends State<cameraAccess> {
         title:  Text(locationMessage.toString(),style: TextStyle(fontSize: 12),),
       ),
 
-      body: ListView(children: [
+      body: ListView(children:
+      [
+
         ElevatedButton(onPressed: (){
           Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ImageDisplay(userId: FirebaseAuth.instance.currentUser!.uid)));
         }, child: Text("Gallery")),
@@ -117,6 +122,7 @@ class _cameraAccessState extends State<cameraAccess> {
         ),
         imagefile != null
             ? Container(
+
           child: Image.file(imagefile),
         )
             : Container(

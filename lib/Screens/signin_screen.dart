@@ -15,77 +15,95 @@ class SigninScreen extends StatefulWidget {
 }
 
 class _SigninScreenState extends State<SigninScreen> {
-
-  TextEditingController _passwordTextController=TextEditingController();
-  TextEditingController _emailTextController=TextEditingController();
-
+  TextEditingController _passwordTextController = TextEditingController();
+  TextEditingController _emailTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.greenAccent,
+              Colors.lightBlueAccent,
+              Colors.greenAccent
+            ],
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).size.height * 0.2, 20, 0),
+            child: Column(
+              children: <Widget>[
+                CircleAvatar(
+                  radius: 90,
+                  backgroundImage: AssetImage('assets/images/login.png'),
+                  backgroundColor: Colors.white60,
+                ),
 
-    return Scaffold(body: Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      decoration: BoxDecoration(gradient: LinearGradient(colors: [
-        hexStringToColor("CB2B93"),
-        hexStringToColor("9546C4"),
-        hexStringToColor("5E61F4")
-      ],begin: Alignment.center, end: Alignment.bottomCenter
-      )),
-      child: SingleChildScrollView(child: Padding(padding:EdgeInsets.fromLTRB(20, MediaQuery.of(context).size.height *0.2, 20, 0) ,
-        child: Column(
-          children: <Widget>[
+                const SizedBox(height: 30),
+                reusableTextField("Enter Email", Icons.person_outlined, false, _emailTextController,),
+                const SizedBox(height: 15),
+                reusableTextField("Enter Password", Icons.lock_outline, true, _passwordTextController),
+                SizedBox(height: 20), // Updated SizedBox height to 20
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue,
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () {
+                      FirebaseAuth.instance
+                          .signInWithEmailAndPassword(
+                          email: _emailTextController.text,
+                          password: _passwordTextController.text)
+                          .then((value) {
+                        showSnackBar(context, "Login successful!");
 
-            logoWidget("assets/images/logo1.png"),
-
-            const SizedBox(height: 30),
-            reusableTextField("Enter Email", Icons.person_outlined, false, _emailTextController),
-            const   SizedBox(height: 15),
-            reusableTextField("Enter Password", Icons.lock_outline, true, _passwordTextController),
-            firebaseUIButton(context, "Sign In", () {
-              FirebaseAuth.instance
-                  .signInWithEmailAndPassword(
-                  email: _emailTextController.text,
-                  password: _passwordTextController.text)
-                  .then((value) {
-                showSnackBar(context, "Login successful!");
-
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => cameraAccess()));
-              }).onError((error, stackTrace) {
-                showSnackBar(context, "Login failed. Please try again.");
-
-
-              });
-            }),
-            const SizedBox(
-              height: 15,
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => cameraAccess()),
+                        );
+                      }).onError((error, stackTrace) {
+                        showSnackBar(context, "Login failed. Please try again.");
+                      });
+                    },
+                    child: Text("Sign In",style: TextStyle(fontSize: 16),),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                forgotPassword(context),
+                signUpOption(),
+              ],
             ),
-            forgotPassword(context),
-            signUpOption(),
-
-
-          ],
-
-        ),),),
-    ),);
+          ),
+        ),
+      ),
+    );
   }
+
   Row signUpOption() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("Don't have account?",
-            style: TextStyle(color: Colors.white70)),
+        const Text("Don't have an account?", style: TextStyle(color: Colors.white70)),
         GestureDetector(
           onTap: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => SignUp_screen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => SignUp_screen()));
           },
           child: const Text(
             " Sign Up",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
-        )
+        ),
       ],
     );
   }
@@ -107,21 +125,20 @@ class _SigninScreenState extends State<SigninScreen> {
         ),
       ),
     );
-
   }
 
-  Widget forgotPassword(BuildContext context){
+  Widget forgotPassword(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 35,
       alignment: Alignment.bottomRight,
       child: TextButton(
-          child: const Text("Forgot Password",
-            style: TextStyle(color: Colors.white70),
-            textAlign: TextAlign.right,
-          ),
-          onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>ResetPassword()))
-
+        child: const Text(
+          "Forgot Password",
+          style: TextStyle(color: Colors.blueAccent),
+          textAlign: TextAlign.center,
+        ),
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ResetPassword())),
       ),
     );
   }
