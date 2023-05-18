@@ -122,7 +122,6 @@ class _cameraAccessState extends State<cameraAccess> {
         title:  Text(locationMessage.toString(),style: TextStyle(fontSize: 12),),
       ),
 
-<<<<<<< HEAD
       body: ListView(children: [
         ElevatedButton(onPressed: (){
           Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ImageDisplay(userId: FirebaseAuth.instance.currentUser!.uid)));
