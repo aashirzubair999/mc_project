@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:project_final/Screens/gallery.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:project_final/Screens/gallery.dart';
+
 
 import 'map.dart';
 
@@ -80,16 +82,37 @@ class _cameraAccessState extends State<cameraAccess> {
   late String long="";
   late String  lat="";
 
-  Future<void> _getlocation() async {
+
+  // Future<void> _getlocation() async {
+  //
+  //   Position position = await Geolocator.getCurrentPosition(
+  //       desiredAccuracy: LocationAccuracy.high);
+  //
+  //   lat =  '${position.latitude}';
+  //   long = '${position.longitude}';
+  //
+  // }
 
 
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-
-    lat =  '${position.latitude}';
-    long = '${position.longitude}';
+  Future<Position> _getCurrentLocation() async{
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if(!serviceEnabled)
+      {
+        return Future.error('Location Service are disabled');
+      }
+    LocationPermission permission = await Geolocator.checkPermission();
+    if(permission==LocationPermission.denied)
+      {
+        permission=await Geolocator.requestPermission();
+        if(permission==LocationPermission.denied)
+          {
+            return Future.error('Location Service are disabled');
+          }
+      }
+    return await Geolocator.getCurrentPosition();
 
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +132,7 @@ class _cameraAccessState extends State<cameraAccess> {
           width: 10,
         ),
         ElevatedButton(onPressed: (){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MapScreen()));
+          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MapScreen(long: double.parse(long), lat: double.parse(lat),)));
         }, child: Text("Map")),
         // Text(locationMessage.toString()),
         SizedBox(
@@ -162,10 +185,16 @@ class _cameraAccessState extends State<cameraAccess> {
             labelStyle: TextStyle(fontSize: 18.0),
 
             onTap: () {
-              _getlocation();
-              setState(() {
-                locationMessage = 'latitute : $lat  ,longitude : $long';
+              // _getlocation();
+              _getCurrentLocation().then((value)
+              {
+                lat='${value.latitude}';
+                long='${value.longitude}';
+                setState(() {
+                  locationMessage = 'latitute : $lat  ,longitude : $long';
+                });
               });
+
             }
             ,
             onLongPress: () => print('THIRD CHILD LONG PRESS'),
