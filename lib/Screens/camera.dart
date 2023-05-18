@@ -8,6 +8,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:project_final/Screens/gallery.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:project_final/Screens/signin_screen.dart';
 
 import 'map.dart';
 
@@ -98,7 +99,46 @@ class _cameraAccessState extends State<cameraAccess> {
       appBar: AppBar(
         title:  Text(locationMessage.toString(),style: TextStyle(fontSize: 12),),
       ),
-
+      drawer: Drawer(
+        child: ListView(
+          children: <Widget>[
+            Container(
+              height: 200, // Adjust the height as per your requirement
+              child: DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+                child: Text(
+                  'Drawer',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 24,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              ),
+            ),
+            ListTile(
+              title: Text('View Profile'),
+            ),
+            ListTile(
+              title: Text('History'),
+            ),
+            ListTile(
+              title: Text('User Guide'),
+            ),
+            ListTile(
+              title: Text('Settings'),
+            ),
+            ListTile(
+              title: Text('Logout'),
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => SigninScreen()));
+              },
+            ),
+          ],
+        ),
+      ),
       body: ListView(children: [
         ElevatedButton(onPressed: (){
           Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ImageDisplay(userId: FirebaseAuth.instance.currentUser!.uid)));
