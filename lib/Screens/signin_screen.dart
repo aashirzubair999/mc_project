@@ -112,7 +112,7 @@ class _SigninScreenState extends State<SigninScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.indigo,
         behavior: SnackBarBehavior.floating,
         duration: Duration(seconds: 2),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

@@ -19,7 +19,7 @@ class cameraAccess extends StatefulWidget {
 }
 
 class _cameraAccessState extends State<cameraAccess> {
-  File imagefile = File('assets/images/logo1.png');
+  File? imagefile;
 
 
   void _getFromCamera() async {
@@ -122,6 +122,7 @@ class _cameraAccessState extends State<cameraAccess> {
         title:  Text(locationMessage.toString(),style: TextStyle(fontSize: 12),),
       ),
 
+<<<<<<< HEAD
       body: ListView(children: [
         ElevatedButton(onPressed: (){
           Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ImageDisplay(userId: FirebaseAuth.instance.currentUser!.uid)));
@@ -151,6 +152,38 @@ class _cameraAccessState extends State<cameraAccess> {
           ),
         ),
       ]),
+=======
+      body: ListView(
+          children: [
+
+            ElevatedButton(onPressed: (){
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ImageDisplay(userId: FirebaseAuth.instance.currentUser!.uid)));
+            }, child: Text("Gallery")),
+            Text(locationMessage.toString()),
+            SizedBox(
+              height: 20,
+              width: 10,
+            ),
+            ElevatedButton(onPressed: (){
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MapScreen()));
+            }, child: Text("Map")),
+            Text(locationMessage.toString()),
+            SizedBox(
+              height: 20,
+              width: 10,
+            ),
+            imagefile != null
+                ? Container(
+
+              child: Image.file(imagefile!),
+            )
+                : Container(
+              child: Center(
+               child: Text("Upload an image")
+              )
+            ),
+          ]),
+>>>>>>> 4641367 (add all files)
       floatingActionButton: SpeedDial(
         icon: Icons.add,
         children: [
