@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:project_final/Screens/gallery.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'map.dart';
 
@@ -102,7 +103,7 @@ class _cameraAccessState extends State<cameraAccess> {
         ElevatedButton(onPressed: (){
           Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ImageDisplay(userId: FirebaseAuth.instance.currentUser!.uid)));
         }, child: Text("Gallery")),
-        Text(locationMessage.toString()),
+        // Text(locationMessage.toString()),
         SizedBox(
           height: 20,
           width: 10,
@@ -110,7 +111,7 @@ class _cameraAccessState extends State<cameraAccess> {
         ElevatedButton(onPressed: (){
           Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MapScreen()));
         }, child: Text("Map")),
-        Text(locationMessage.toString()),
+        // Text(locationMessage.toString()),
         SizedBox(
           height: 20,
           width: 10,
