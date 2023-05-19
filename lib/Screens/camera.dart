@@ -44,7 +44,7 @@ class _cameraAccessState extends State<cameraAccess> {
       final url = await mountainsRef.getDownloadURL();
       await FirebaseFirestore.instance
           .collection('images')
-          .add({'imageUrl': url,'UID':FirebaseAuth.instance.currentUser!.uid});
+          .add({'imageUrl': url,'UID':FirebaseAuth.instance.currentUser!.uid,'lonitude':long,'latitude':lat});
       print(url);
     }).catchError((onError) {
       print(onError);
@@ -117,7 +117,7 @@ class _cameraAccessState extends State<cameraAccess> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
+      resizeToAvoidBottomInset : false,
       appBar: AppBar(
         title:  Text(locationMessage.toString(),style: TextStyle(fontSize: 12),),
       ),
