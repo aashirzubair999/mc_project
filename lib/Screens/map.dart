@@ -22,7 +22,7 @@ class _MapScreenState extends State<MapScreen> {
       body: GoogleMap(
         initialCameraPosition: CameraPosition(
           target: LatLng(widget.lat,widget.long),
-          zoom: 14,
+          zoom: 16,
         ),
         markers: {
           Marker(

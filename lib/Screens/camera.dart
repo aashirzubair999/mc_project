@@ -9,7 +9,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:project_final/Screens/gallery.dart';
-
+import 'package:project_final/Screens/signin_screen.dart';
 
 import 'map.dart';
 
@@ -121,7 +121,46 @@ class _cameraAccessState extends State<cameraAccess> {
       appBar: AppBar(
         title:  Text(locationMessage.toString(),style: TextStyle(fontSize: 12),),
       ),
-
+        drawer: Drawer(
+          child: ListView(
+            children: <Widget>[
+              Container(
+                height: 200, // Adjust the height as per your requirement
+                child: DrawerHeader(
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                  ),
+                  child: Text(
+                    'Drawer',
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 24,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ),
+              ),
+              ListTile(
+                title: Text('View Profile'),
+              ),
+              ListTile(
+                title: Text('History'),
+              ),
+              ListTile(
+                title: Text('User Guide'),
+              ),
+              ListTile(
+                title: Text('Settings'),
+              ),
+              ListTile(
+                title: Text('Logout'),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => SigninScreen()));
+                },
+              ),
+            ],
+          ),
+        ),
       body: ListView(children: [
         ElevatedButton(onPressed: (){
           Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ImageDisplay(userId: FirebaseAuth.instance.currentUser!.uid)));
@@ -141,48 +180,15 @@ class _cameraAccessState extends State<cameraAccess> {
         ),
         imagefile != null
             ? Container(
-          child: Image.file(imagefile),
+          child: Image.file(imagefile!),
         )
             : Container(
-          child: Icon(
-            Icons.camera_enhance_rounded,
-            color: Colors.green,
-            size: MediaQuery.of(context).size.width * .6,
-          ),
+            child: Text("Upload image",textAlign: TextAlign.center, style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 19
+            ), )
         ),
       ]),
-=======
-      body: ListView(
-          children: [
 
-            ElevatedButton(onPressed: (){
-              Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ImageDisplay(userId: FirebaseAuth.instance.currentUser!.uid)));
-            }, child: Text("Gallery")),
-            Text(locationMessage.toString()),
-            SizedBox(
-              height: 20,
-              width: 10,
-            ),
-            ElevatedButton(onPressed: (){
-              Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MapScreen()));
-            }, child: Text("Map")),
-            Text(locationMessage.toString()),
-            SizedBox(
-              height: 20,
-              width: 10,
-            ),
-            imagefile != null
-                ? Container(
-
-              child: Image.file(imagefile!),
-            )
-                : Container(
-              child: Center(
-               child: Text("Upload an image")
-              )
-            ),
-          ]),
->>>>>>> 4641367 (add all files)
       floatingActionButton: SpeedDial(
         icon: Icons.add,
         children: [
