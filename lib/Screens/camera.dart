@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -6,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:project_final/Screens/gallery.dart';
 import 'package:project_final/Screens/signin_screen.dart';
 
@@ -19,6 +18,7 @@ class cameraAccess extends StatefulWidget {
 }
 
 class _cameraAccessState extends State<cameraAccess> {
+
   File? imagefile;
 
 
@@ -83,15 +83,6 @@ class _cameraAccessState extends State<cameraAccess> {
   late String  lat="";
 
 
-  // Future<void> _getlocation() async {
-  //
-  //   Position position = await Geolocator.getCurrentPosition(
-  //       desiredAccuracy: LocationAccuracy.high);
-  //
-  //   lat =  '${position.latitude}';
-  //   long = '${position.longitude}';
-  //
-  // }
 
 
   Future<Position> _getCurrentLocation() async{
@@ -119,42 +110,93 @@ class _cameraAccessState extends State<cameraAccess> {
     return Scaffold(
       resizeToAvoidBottomInset : false,
       appBar: AppBar(
-        title:  Text(locationMessage.toString(),style: TextStyle(fontSize: 12),),
+        // title:  Text(locationMessage.toString(),style: TextStyle(fontSize: 12),),
       ),
         drawer: Drawer(
           child: ListView(
             children: <Widget>[
               Container(
+
                 height: 200, // Adjust the height as per your requirement
-                child: DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                  ),
-                  child: Text(
-                    'Drawer',
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 24,
-                      fontWeight: FontWeight.normal,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 20,
                     ),
-                  ),
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage: NetworkImage(
+                          'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      FirebaseAuth.instance.currentUser!.email.toString(),
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
+
+
+              ),
+
+              ListTile(
+               onTap: (){
+                 Navigator.push(context, MaterialPageRoute(builder: (context) => cameraAccess()));
+               },
+                leading: Icon(
+                  Icons.home,
+                ),
+                title: Text('Home'),
               ),
               ListTile(
-                title: Text('View Profile'),
+               onTap: (){
+                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ImageDisplay(userId: FirebaseAuth.instance.currentUser!.uid)));
+               },
+               leading: Icon(
+                 Icons.browse_gallery,
+               ),
+                title: Text('Gallery'),
               ),
               ListTile(
-                title: Text('History'),
-              ),
-              ListTile(
+                 onTap: (){
+                   DialogueofBoxshow(context);
+                 },
+               leading: Icon(
+                 Icons.book,
+               ),
                 title: Text('User Guide'),
               ),
+
+
               ListTile(
-                title: Text('Settings'),
+                onTap: (){
+                  if(long.isNotEmpty)
+                    {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MapScreen(long: double.parse(long), lat: double.parse(lat),)));
+                    }else
+                      {
+                        DialogueofBoxshowerror(context,'Please First Take the Picture OR Press the Get Location Button ');
+                      }
+
+                },
+                leading: Icon(
+                  Icons.map,
+                ),
+                title: Text('Pesticides Shops'),
               ),
-              ListTile(
+
+               ListTile(
+               leading: Icon(
+                 Icons.logout,
+               ),
                 title: Text('Logout'),
-                onTap: () {
+                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) => SigninScreen()));
                 },
               ),
@@ -162,17 +204,17 @@ class _cameraAccessState extends State<cameraAccess> {
           ),
         ),
       body: ListView(children: [
-        ElevatedButton(onPressed: (){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ImageDisplay(userId: FirebaseAuth.instance.currentUser!.uid)));
-        }, child: Text("Gallery")),
+        // ElevatedButton(onPressed: (){
+        //   Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ImageDisplay(userId: FirebaseAuth.instance.currentUser!.uid)));
+        // }, child: Text("Gallery")),
         // Text(locationMessage.toString()),
         SizedBox(
           height: 20,
           width: 10,
         ),
-        ElevatedButton(onPressed: (){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MapScreen(long: double.parse(long), lat: double.parse(lat),)));
-        }, child: Text("Map")),
+        // ElevatedButton(onPressed: (){
+        //   Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MapScreen(long: double.parse(long), lat: double.parse(lat),)));
+        // }, child: Text("Map")),
         // Text(locationMessage.toString()),
         SizedBox(
           height: 20,
@@ -212,6 +254,15 @@ class _cameraAccessState extends State<cameraAccess> {
             labelStyle: TextStyle(fontSize: 18.0),
             onTap: () {
               _getFromCamera();
+              // _getlocation();
+              _getCurrentLocation().then((value)
+              {
+                lat='${value.latitude}';
+                long='${value.longitude}';
+                setState(() {
+                  locationMessage = 'latitute : $lat  ,longitude : $long';
+                });
+              });
             },
             onLongPress: () => print('SECOND CHILD LONG PRESS'),
           ),
@@ -246,4 +297,90 @@ class _cameraAccessState extends State<cameraAccess> {
 
     );
   }
+}
+
+void DialogueofBoxshow(BuildContext context) async{
+
+  String name="Null";
+
+
+
+  showDialog(context: context, builder: (BuildContext context) {
+    return AlertDialog(
+
+      title: Column(
+        children: [
+          Text("Reversed:"),
+          Text("--1. Click on + icon on the main screen take a new picture or upload from gallery "),
+          Text("--Once you take a picture it will automatically uploaded to our storage "),
+          Text("--We will then pass it on to our ML models and you will be able to see the result generated and our confidence in those results being true."),
+          Text("--Based on that you can take a decision to proceed with our diagnosis or not. "),
+          Text("--Once the disease has been recognized, you will also be shown a list of pesticide shops near you. For that we will need access to your location. "),
+          Text("--You can then buy required remedies from these shops. "),
+        ],
+      ),
+      actions: [
+        TextButton(onPressed: () {
+          Navigator.of(context).pop();
+        }, child: Text("Back")),
+
+
+
+      ],
+    );
+  });
+}
+
+
+
+
+
+
+Future DislofBoxshow(BuildContext context) async{
+
+
+
+  return Column(
+    children: [
+      Text("1. Click on + icon on the main screen ake a new picture or upload from gallery"),
+  Text("Once you take a picture it will automatically uploaded to our storage"),
+  Text("We will then pass it on to our ML models and you will be able to see the result generated and our confidence in those results being true."),
+  Text("Based on that you can take a decision to proceed with our diagnosis or not."),
+  Text("Once the disease has been recognized, you will also be shown a list of pesticide shops near you. For that we will need access to your location."),
+  Text("You can then buy required remedies from these shops."),
+
+    ],
+
+  );
+
+}
+
+
+
+
+
+
+
+
+
+void DialogueofBoxshowerror(BuildContext context,String message) async{
+
+  String name="Null";
+  showDialog(context: context, builder: (BuildContext context) {
+    return AlertDialog(
+      title: Column(
+        children: [
+          Text(message),
+        ],
+      ),
+      actions: [
+        TextButton(onPressed: () {
+          Navigator.of(context).pop();
+        }, child: Text("Back")),
+
+
+
+      ],
+    );
+  });
 }
