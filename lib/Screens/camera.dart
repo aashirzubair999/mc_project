@@ -231,7 +231,10 @@ class _CameraAccessState extends State<CameraAccess> {
                 children: [
                   Image(image: AssetImage('assets/images/cameraplaceholder.png',),width: 250,height: 250,),
                   Text('We are waiting for you to upload an Image',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold, ) ),
+                  SizedBox(height: 20,),
+                  ElevatedButton(onPressed: (){
 
+                  }, child: Text("Upload Image"))
                 ],
               )
           ),
@@ -280,12 +283,19 @@ class _CameraAccessState extends State<CameraAccess> {
                 IconButton(
                   icon: Icon(Icons.location_pin),
                   onPressed: () {
+                    _getCurrentLocation().then((value) {
+                      lat = '${value.latitude}';
+                      long = '${value.longitude}';
+                      setState(() {
+                        locationMessage = 'latitute : $lat  ,longitude : $long';
+                      });
+                    });
                     if(long.isNotEmpty)
                     {
                       Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MapScreen(long: double.parse(long), lat: double.parse(lat),)));
                     }else
                     {
-                      DialogueofBoxshowerror(context,'Please First Take the Picture OR Press the Get Location Button ');
+                      // DialogueofBoxshowerror(context,'Please First Take the Picture OR Press the Get Location Button ');
                     }
 
 
