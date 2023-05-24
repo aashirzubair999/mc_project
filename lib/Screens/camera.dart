@@ -224,13 +224,13 @@ class _CameraAccessState extends State<CameraAccess> {
           child: Image.file(imageFile!),
         )
             : Container(
-          height: 250,
-          width: 250,
+          height: 350,
+          width: 350,
           child: Center(
               child: Column(
                 children: [
-                  Image(image: AssetImage('assets/images/cameraplaceholder.png')),
-                  Text('We are waiting for you to upload an Image',style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold, ) ),
+                  Image(image: AssetImage('assets/images/cameraplaceholder.png',),width: 250,height: 250,),
+                  Text('We are waiting for you to upload an Image',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold, ) ),
 
                 ],
               )
