@@ -70,7 +70,7 @@ class _SigninScreenState extends State<SigninScreen> {
 
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => cameraAccess()),
+                          MaterialPageRoute(builder: (context) => CameraAccess()),
                         );
                       }).onError((error, stackTrace) {
                         showSnackBar(context, "Login failed. Please try again.");

@@ -12,15 +12,17 @@ import 'package:project_final/Screens/signin_screen.dart';
 
 import 'map.dart';
 
-class cameraAccess extends StatefulWidget {
+class CameraAccess extends StatefulWidget {
   @override
-  State<cameraAccess> createState() => _cameraAccessState();
+  State<CameraAccess> createState() => _CameraAccessState();
 }
 
-class _cameraAccessState extends State<cameraAccess> {
-
-  File? imagefile;
-
+class _CameraAccessState extends State<CameraAccess> {
+  int _currentIndex = 0;
+  File? imageFile;
+  late String locationMessage = '';
+  late String long = "";
+  late String lat = "";
 
   void _getFromCamera() async {
     final pickedFile = await ImagePicker().pickImage(
@@ -30,21 +32,22 @@ class _cameraAccessState extends State<cameraAccess> {
     );
     if (pickedFile == null) return;
 
-    final imagefile = File(pickedFile.path);
+    final imageFile = File(pickedFile.path);
     setState(() {
-      this.imagefile = imagefile;
+      this.imageFile = imageFile;
     });
 
-    final path = 'files/${DateTime.now().microsecondsSinceEpoch}_${imagefile.path.split('/').last}';
-    final storageref = FirebaseStorage.instance.ref();
-    final mountainsRef = storageref.child(path);
-    final uploadTask = mountainsRef.putFile(imagefile);
+    final path =
+        'files/${DateTime.now().microsecondsSinceEpoch}_${imageFile.path.split('/').last}';
+    final storageRef = FirebaseStorage.instance.ref();
+    final mountainsRef = storageRef.child(path);
+    final uploadTask = mountainsRef.putFile(imageFile);
 
     uploadTask.whenComplete(() async {
       final url = await mountainsRef.getDownloadURL();
       await FirebaseFirestore.instance
           .collection('images')
-          .add({'imageUrl': url,'UID':FirebaseAuth.instance.currentUser!.uid,'lonitude':long,'latitude':lat});
+          .add({'imageUrl': url, 'UID': FirebaseAuth.instance.currentUser!.uid, 'longitude': long, 'latitude': lat});
       print(url);
     }).catchError((onError) {
       print(onError);
@@ -59,15 +62,16 @@ class _cameraAccessState extends State<cameraAccess> {
     );
     if (pickedFile == null) return;
 
-    final imagefile = File(pickedFile.path);
+    final imageFile = File(pickedFile.path);
     setState(() {
-      this.imagefile = imagefile;
+      this.imageFile = imageFile;
     });
 
-    final path = 'files/${DateTime.now().microsecondsSinceEpoch}_${imagefile.path.split('/').last}';
-    final storageref = FirebaseStorage.instance.ref();
-    final mountainsRef = storageref.child(path);
-    final uploadTask = mountainsRef.putFile(imagefile);
+    final path =
+        'files/${DateTime.now().microsecondsSinceEpoch}_${imageFile.path.split('/').last}';
+    final storageRef = FirebaseStorage.instance.ref();
+    final mountainsRef = storageRef.child(path);
+    final uploadTask = mountainsRef.putFile(imageFile);
 
     uploadTask.whenComplete(() async {
       final url = await mountainsRef.getDownloadURL();
@@ -77,132 +81,127 @@ class _cameraAccessState extends State<cameraAccess> {
     });
   }
 
-  //String filepath,
-  late String locationMessage = '';
-  late String long="";
-  late String  lat="";
-
-
-
-
-  Future<Position> _getCurrentLocation() async{
+  Future<Position> _getCurrentLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if(!serviceEnabled)
-      {
-        return Future.error('Location Service are disabled');
-      }
+    if (!serviceEnabled) {
+      return Future.error('Location Service is disabled');
+    }
     LocationPermission permission = await Geolocator.checkPermission();
-    if(permission==LocationPermission.denied)
-      {
-        permission=await Geolocator.requestPermission();
-        if(permission==LocationPermission.denied)
-          {
-            return Future.error('Location Service are disabled');
-          }
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location Service is disabled');
       }
+    }
     return await Geolocator.getCurrentPosition();
-
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
+
       resizeToAvoidBottomInset : false,
       appBar: AppBar(
-        // title:  Text(locationMessage.toString(),style: TextStyle(fontSize: 12),),
-      ),
-        drawer: Drawer(
-          child: ListView(
-            children: <Widget>[
-              Container(
-
-                height: 200, // Adjust the height as per your requirement
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 20,
-                    ),
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundImage: NetworkImage(
-                          'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      FirebaseAuth.instance.currentUser!.email.toString(),
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-
-
-              ),
-
-              ListTile(
-               onTap: (){
-                 Navigator.push(context, MaterialPageRoute(builder: (context) => cameraAccess()));
-               },
-                leading: Icon(
-                  Icons.home,
-                ),
-                title: Text('Home'),
-              ),
-              ListTile(
-               onTap: (){
-                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ImageDisplay(userId: FirebaseAuth.instance.currentUser!.uid)));
-               },
-               leading: Icon(
-                 Icons.browse_gallery,
-               ),
-                title: Text('Gallery'),
-              ),
-              ListTile(
-                 onTap: (){
-                   DialogueofBoxshow(context);
-                 },
-               leading: Icon(
-                 Icons.book,
-               ),
-                title: Text('User Guide'),
-              ),
-
-
-              ListTile(
-                onTap: (){
-                  if(long.isNotEmpty)
-                    {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MapScreen(long: double.parse(long), lat: double.parse(lat),)));
-                    }else
-                      {
-                        DialogueofBoxshowerror(context,'Please First Take the Picture OR Press the Get Location Button ');
-                      }
-
-                },
-                leading: Icon(
-                  Icons.map,
-                ),
-                title: Text('Pesticides Shops'),
-              ),
-
-               ListTile(
-               leading: Icon(
-                 Icons.logout,
-               ),
-                title: Text('Logout'),
-                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => SigninScreen()));
-                },
-              ),
-            ],
+        title: Text('Pesticides Detection'),
+        centerTitle: true,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.greenAccent,
+                Colors.green,
+                Colors.greenAccent
+              ],
+              end: Alignment.bottomCenter,
+            ),
           ),
         ),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: <Widget>[
+            Container(
+
+              height: 200, // Adjust the height as per your requirement
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: NetworkImage(
+                        'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+
+                ],
+              ),
+
+
+            ),
+
+            ListTile(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => CameraAccess()));
+              },
+              leading: Icon(
+                Icons.home,
+              ),
+              title: Text('Home'),
+            ),
+            ListTile(
+              onTap: (){
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ImageDisplay(userId: FirebaseAuth.instance.currentUser!.uid)));
+              },
+              leading: Icon(
+                Icons.browse_gallery,
+              ),
+              title: Text('Gallery'),
+            ),
+            ListTile(
+              onTap: (){
+                DialogueofBoxshow(context);
+              },
+              leading: Icon(
+                Icons.book,
+              ),
+              title: Text('User Guide'),
+            ),
+
+
+            ListTile(
+              onTap: (){
+                if(long.isNotEmpty)
+                {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MapScreen(long: double.parse(long), lat: double.parse(lat),)));
+                }else
+                {
+                  DialogueofBoxshowerror(context,'Please First Take the Picture OR Press the Get Location Button ');
+                }
+
+              },
+              leading: Icon(
+                Icons.map,
+              ),
+              title: Text('Pesticides Shops'),
+            ),
+
+            ListTile(
+              leading: Icon(
+                Icons.logout,
+              ),
+              title: Text('Logout'),
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => SigninScreen()));
+              },
+            ),
+          ],
+        ),
+      ),
       body: ListView(children: [
         // ElevatedButton(onPressed: (){
         //   Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ImageDisplay(userId: FirebaseAuth.instance.currentUser!.uid)));
@@ -220,83 +219,115 @@ class _cameraAccessState extends State<cameraAccess> {
           height: 20,
           width: 10,
         ),
-        imagefile != null
+        imageFile != null
             ? Container(
-          child: Image.file(imagefile!),
+          child: Image.file(imageFile!),
         )
             : Container(
-            child: Text("Upload image",textAlign: TextAlign.center, style: TextStyle(
-              fontWeight: FontWeight.bold, fontSize: 19
-            ), )
+          height: 250,
+          width: 250,
+          child: Center(
+              child: Column(
+                children: [
+                  Image(image: AssetImage('assets/images/cameraplaceholder.png')),
+                  Text('We are waiting for you to upload an Image',style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold, ) ),
+
+                ],
+              )
+          ),
         ),
       ]),
 
-      floatingActionButton: SpeedDial(
-        icon: Icons.add,
-        children: [
-          SpeedDialChild(
-            //speed dial child
-            child: Icon(Icons.upload),
-            backgroundColor: Colors.red,
-            foregroundColor: Colors.white,
-            label: 'Upload From Gallery',
-            labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () {
-              _getFromGallery();
-            },
-            onLongPress: () => print('FIRST CHILD LONG PRESS'),
-          ),
-          SpeedDialChild(
-            child: Icon(Icons.camera_alt),
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
-            label: 'Open Camera',
-            labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () {
-              _getFromCamera();
-              // _getlocation();
-              _getCurrentLocation().then((value)
-              {
-                lat='${value.latitude}';
-                long='${value.longitude}';
-                setState(() {
-                  locationMessage = 'latitute : $lat  ,longitude : $long';
-                });
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            _getFromCamera();
+            // _getlocation();
+            _getCurrentLocation().then((value)
+            {
+              lat='${value.latitude}';
+              long='${value.longitude}';
+              setState(() {
+                locationMessage = 'latitute : $lat  ,longitude : $long';
               });
-            },
-            onLongPress: () => print('SECOND CHILD LONG PRESS'),
-          ),
-          SpeedDialChild(
-            child: Icon(Icons.location_on),
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.green,
-            label: 'Get Location ',
-            labelStyle: TextStyle(fontSize: 18.0),
-
-            onTap: () {
-              // _getlocation();
-              _getCurrentLocation().then((value)
-              {
-                lat='${value.latitude}';
-                long='${value.longitude}';
-                setState(() {
-                  locationMessage = 'latitute : $lat  ,longitude : $long';
-                });
-              });
-
-            }
-            ,
-            onLongPress: () => print('THIRD CHILD LONG PRESS'),
-
-          ),
-
-        ],
+            });
+          },
+          child: Icon(Icons.camera_alt),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.home),
+                  onPressed: () {
+                    setState(() {
+                      _currentIndex = 0;
+                    });
+                  },
+                ),
+                Text('Home'),
+              ],
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.location_pin),
+                  onPressed: () {
+                    if(long.isNotEmpty)
+                    {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MapScreen(long: double.parse(long), lat: double.parse(lat),)));
+                    }else
+                    {
+                      DialogueofBoxshowerror(context,'Please First Take the Picture OR Press the Get Location Button ');
+                    }
 
 
-
+                  },
+                ),
+                Text('Map'),
+              ],
+            ),
+            SizedBox(width: 48), // Empty space for the center button
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.energy_savings_leaf),
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ImageDisplay(userId: FirebaseAuth.instance.currentUser!.uid)));
+                  },
+                ),
+              const  Text('My Plants'),
+              ],
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.person),
+                  onPressed: () {
+                    setState(() {
+                      _currentIndex = 3;
+                    });
+                  },
+                ),
+               const  Text('Profile'),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
+
+
 }
 
 void DialogueofBoxshow(BuildContext context) async{
@@ -343,24 +374,17 @@ Future DislofBoxshow(BuildContext context) async{
   return Column(
     children: [
       Text("1. Click on + icon on the main screen ake a new picture or upload from gallery"),
-  Text("Once you take a picture it will automatically uploaded to our storage"),
-  Text("We will then pass it on to our ML models and you will be able to see the result generated and our confidence in those results being true."),
-  Text("Based on that you can take a decision to proceed with our diagnosis or not."),
-  Text("Once the disease has been recognized, you will also be shown a list of pesticide shops near you. For that we will need access to your location."),
-  Text("You can then buy required remedies from these shops."),
+      Text("Once you take a picture it will automatically uploaded to our storage"),
+      Text("We will then pass it on to our ML models and you will be able to see the result generated and our confidence in those results being true."),
+      Text("Based on that you can take a decision to proceed with our diagnosis or not."),
+      Text("Once the disease has been recognized, you will also be shown a list of pesticide shops near you. For that we will need access to your location."),
+      Text("You can then buy required remedies from these shops."),
 
     ],
 
   );
 
 }
-
-
-
-
-
-
-
 
 
 void DialogueofBoxshowerror(BuildContext context,String message) async{
@@ -384,3 +408,12 @@ void DialogueofBoxshowerror(BuildContext context,String message) async{
     );
   });
 }
+
+
+
+
+
+
+
+
+

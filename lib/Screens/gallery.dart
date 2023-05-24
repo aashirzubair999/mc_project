@@ -53,7 +53,10 @@ class _ImageDisplayState extends State<ImageDisplay> {
               SingleChildScrollView(
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    minHeight: MediaQuery.of(context).size.height,
+                    minHeight: MediaQuery
+                        .of(context)
+                        .size
+                        .height,
                   ),
                   child: GridView.builder(
 
@@ -67,12 +70,28 @@ class _ImageDisplayState extends State<ImageDisplay> {
                       var data = snapshot.data!.docs[index].data();
                       print("Done");
                       return GestureDetector(
-                        onTap: () => onImageClicked(data['imageUrl']),
+                        onTap: () {
+                          onImageClicked(data['imageUrl']);
+                          IconButton(
+                            onPressed: () {
+                              FirebaseFirestore.instance
+                                  .collection('images')
+                                  .doc(snapshot.data!.docs[index].id)
+                                  .delete();
+                            },
+
+                            icon: Icon(Icons.delete),
+
+                          );
+                        },
+
                         child: Container(
                           child: Column(
                             children: [
-                              (data as Map<String, dynamic>)?['imageUrl'] != null
-                                  ? Image.network(data['imageUrl'],height: 150,)
+                              (data as Map<String, dynamic>)?['imageUrl'] !=
+                                  null
+                                  ? Image.network(
+                                data['imageUrl'], height: 150,)
                                   : SizedBox(),
                             ],
                           ),
