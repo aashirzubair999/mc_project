@@ -75,11 +75,15 @@ class _CameraAccessState extends State<CameraAccess> {
 
     uploadTask.whenComplete(() async {
       final url = await mountainsRef.getDownloadURL();
+      await FirebaseFirestore.instance
+          .collection('images')
+          .add({'imageUrl': url, 'UID': FirebaseAuth.instance.currentUser!.uid, 'longitude': long, 'latitude': lat});
       print(url);
     }).catchError((onError) {
       print(onError);
     });
   }
+
 
   Future<Position> _getCurrentLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -233,7 +237,7 @@ class _CameraAccessState extends State<CameraAccess> {
                   Text('We are waiting for you to upload an Image',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold, ) ),
                   SizedBox(height: 20,),
                   ElevatedButton(onPressed: (){
-
+                    _getFromGallery();
                   }, child: Text("Upload Image"))
                 ],
               )

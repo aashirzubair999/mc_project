@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class ImageDisplay extends StatefulWidget {
   final String userId;
@@ -9,10 +9,6 @@ class ImageDisplay extends StatefulWidget {
 
   @override
   _ImageDisplayState createState() => _ImageDisplayState();
-}
-
-void gogo(var data) {
-  Image.network(data['imageUrl']);
 }
 
 class _ImageDisplayState extends State<ImageDisplay> {
@@ -53,22 +49,18 @@ class _ImageDisplayState extends State<ImageDisplay> {
               SingleChildScrollView(
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    minHeight: MediaQuery
-                        .of(context)
-                        .size
-                        .height,
+                    minHeight: MediaQuery.of(context).size.height,
                   ),
                   child: GridView.builder(
-
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
+                      childAspectRatio: 1.0, // Set the desired aspect ratio
                     ),
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       var data = snapshot.data!.docs[index].data();
-                      print("Done");
                       return GestureDetector(
                         onTap: () {
                           onImageClicked(data['imageUrl']);
@@ -79,21 +71,24 @@ class _ImageDisplayState extends State<ImageDisplay> {
                                   .doc(snapshot.data!.docs[index].id)
                                   .delete();
                             },
-
                             icon: Icon(Icons.delete),
-
                           );
                         },
-
-                        child: Container(
-                          child: Column(
-                            children: [
-                              (data as Map<String, dynamic>)?['imageUrl'] !=
-                                  null
-                                  ? Image.network(
-                                data['imageUrl'], height: 150,)
-                                  : SizedBox(),
-                            ],
+                        child: Padding(
+                          padding: EdgeInsets.all(2.0),
+                          child: Container(
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                if ((data as Map<String, dynamic>)?['imageUrl'] != null)
+                                  Positioned.fill(
+                                    child: Image.network(
+                                      data['imageUrl'],
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
                         ),
                       );

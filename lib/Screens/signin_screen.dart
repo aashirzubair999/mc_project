@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:project_final/Screens/camera.dart';
 import 'package:project_final/Screens/reset_password.dart';
 import 'package:project_final/Screens/signup_screen.dart';
-
 import '../reusable_widgets/reusable_widget.dart';
 import '../utils/colors_utils.dart';
 
